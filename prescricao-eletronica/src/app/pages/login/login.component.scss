@@ -1,0 +1,21 @@
+.container {
+  min-height: 100vh;
+  &.bg_login {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .bg_login {
+    background-image: url('../../../assets/images/background.jpg');
+    background-position: left;
+  }
+}
+
+@media only screen and (max-width: 991px) {
+  .bg_login {
+    background-image: url('../../../assets/images/background-mobile.jpg');
+    background-position: center;
+  }
+}
