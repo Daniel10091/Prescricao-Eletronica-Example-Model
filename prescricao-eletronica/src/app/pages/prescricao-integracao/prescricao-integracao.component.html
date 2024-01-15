@@ -1,1 +1,231 @@
-<p>prescricao-integracao works!</p>
+<div class="container py-8 flex justify-content-center align-items-center">
+  <form action="#" class="form py-4 px-3 bg-white border-round-2xl">
+    
+    <div>
+      <h2 class="title mt-3 ml-3">Nova Prescrição</h2>
+    </div>
+    
+    <div class="py-3 border-top-1 border-bottom-1 border-300">
+      <section class="section">
+        <div class="row grid formgrid p-3">
+          <div class="col">
+            <div class="form-group flex flex-column p-fluid gap-2">
+              <label for="paciente" class="text-lg font-bold">Paciente</label>
+              <p-dropdown [options]="pacientes" [(ngModel)]="paciente" placeholder="Selecione um paciente" [disabled]="true" [ngModelOptions]="{standalone: false}"></p-dropdown>
+            </div>
+          </div>
+          <div class="col col-fixed flex align-items-end">
+            <button #addPacienteSelection pButton pRipple type="button" class="addPacienteSelection p-button-rounded" label="Cadastrar novo paciente"></button>
+          </div>
+        </div>
+      </section>
+  
+      <!-- <section *ngIf="addMedicamento" class="section">
+        <h4 class="title ml-3">Medicamentos</h4>
+        
+      </section> -->
+  
+      <section class="section p-3">
+        <div class="flex justify-content-between align-items-center">
+          <label for="localAtendimento" class="text-lg font-bold">Medicamentos</label>
+          <button #addMedicamentoButtom pButton pRipple type="button" icon="pi pi-plus" label="Adicionar medicamento" class="addMedicamentoButtom p-button-text p-button-rounded" (click)="toggleAddMedicamentoBox(true)"></button>
+				<!-- <button pButton pRipple type="button" label="Warning" class="p-button-warning p-button-text"></button> -->
+        </div>
+        
+        <div *ngIf="addMedicamento" class="add-medicamentos mt-2 pb-3 bg-gray-100 border-1 border-500 border-round-lg">
+          <h5 class="m-3">Adicionar Medicamento</h5>
+          <div class="row grid px-3">
+            <div class="col col-6">
+              <div class="form-group flex flex-column gap-2 p-fluid">
+                <label for="medicamentoNome">Nome do medicamento/fórmula/substância prescrito(a) (DCB) <span class="text-lg font-bold text-red-500">*</span></label>
+                <!-- <input type="hidden" pInputText class="form-control" id="medicamentoNome" placeholder="" [(ngModel)]="medicamento.nome" name="medicamentoNome"> -->
+			          <p-autoComplete [(ngModel)]="selectedMedicamentoDrop" [suggestions]="filteredMedicamentos" name="medicamentoNome" (completeMethod)="filterMedicamento($event)" field="label" [ngModelOptions]="{standalone: true}"></p-autoComplete>
+                <!-- <p-dropdown [options]="medicamentos" [(ngModel)]="selectedMedicamentoDrop" id="medicamentoNome" placeholder="Selecione um medicamento"></p-dropdown> -->
+              </div>
+            </div>
+            <div class="col col-3">
+              <div class="form-group flex flex-column gap-2">
+                <label for="medicamentoConcentracao">Dosagem/Concentração</label>
+                <input type="text" pInputText class="form-control" id="medicamentoConcentracao" placeholder="" [(ngModel)]="medicamento.concentracao" name="medicamentoConcentracao">
+              </div>
+            </div>
+            <div class="col col-3">
+              <div class="form-group flex flex-column gap-2">
+                <label for="medicamentoQuantidade">Quantidade <span class="text-lg font-bold text-red-500">*</span></label>
+                <input type="text" pInputText class="form-control" id="medicamentoQuantidade" placeholder="" [(ngModel)]="medicamento.quantidade" name="medicamentoQuantidade">
+              </div>
+            </div>
+          </div>
+          <div class="row grid px-3">
+            <div class="col col-12">
+              <div class="form-group flex flex-column gap-2">
+                <label for="medicamentoInformacoes">Administração, posologia, duração do tratamento e outras informações</label>
+                <textarea rows="5" cols="30" pInputTextarea id="medicamentoInformacoes" [autoResize]="true" [value]="medicamento.informacoes ? medicamento.informacoes : ''" (input)="changeMedicamentoInformacao($event)"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="row flex justify-content-end gap-3 pt-3 px-3">
+            <button pButton pRipple type="button" label="Adicionar" class="p-button-outlined p-button-rounded" (click)="adicionarMedicamento(medicamento)"></button>
+            <button pButton pRipple type="button" label="Cancelar" class="p-button-outlined p-button-rounded" (click)="toggleAddMedicamentoBox(false)"></button>
+          </div>
+        </div>
+
+        <div class="medicamentos-container mt-2 bg-white border-1 border-400 border-round-md">
+          <h5 class="m-3">Medicamentos Prescritos</h5>
+          <div class="p-3 border-top-1 border-300">
+            <i *ngIf="medicamentosSelecionados.length <= 0" class="text-lg">Nenhum medicamento foi receitado ainda.</i>
+            <div *ngIf="medicamentosSelecionados.length > 0" class="medicamentos px-3">
+              <div *ngFor="let item of medicamentosSelecionados" class="grid mb-3 border-bottom-1 border-300">
+                <div class="col">
+                  <p class="m-0 text-gray-600">Medicamento: <span class="text-primary text-lg font-bold">{{item.nome}}</span></p>
+                  <p class="m-0 text-gray-600">Dosagem/Concentração: <span class="text-gray-700 font-bold">{{item.concentracao}}</span></p>
+                  <p class="m-0 text-gray-600">Quantidade: <span class="text-gray-700 font-bold">{{item.quantidade}}</span></p>
+                  <p class="m-0 text-gray-600">Informações: <span class="text-gray-700 font-bold">{{item.informacoes}}</span></p>
+                </div>
+                <div class="col-1 flex justify-content-end">
+                  <div class="buttons flex flex-column align-content-center gap-2">
+                    <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-outlined" (click)="editMedicamento(item)"></button>
+                    <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined" (click)="deleteMedicamento(item)"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <section class="section">
+        <div class="row grid formgrid p-3">
+          <div class="col">
+            <div class="form-group flex flex-column p-fluid gap-2">
+              <label for="localAtendimento" class="text-lg font-bold">Local de Atendimento</label>
+              <p-dropdown [options]="locaisAtendimento" [(ngModel)]="selectedLocalAtendimentoDrop" placeholder="Selecione um local de atendimento" [disabled]="true" [ngModelOptions]="{standalone: false}"></p-dropdown>
+            </div>
+          </div>
+          <div class="col col-fixed flex align-items-end">
+            <button #addLocalAtendimentoSelection pButton pRipple type="button" class="addLocalAtendimentoSelection p-button-rounded" label="Cadastrar novo local de atendimento"></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="section mt-6">
+      <div class="row grid">
+        <div class="col px-5">
+          <div class="buttons flex justify-content-end gap-3">
+            <button pButton pRipple type="button" label="Visualizar" class="btn-primary p-button-outlined" (click)="viewPrescricao()"></button>
+            <button pButton pRipple type="button" label="Salvar e assinar" class="btn-primary" (click)="sendPrescription()"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </form>
+</div>
+
+<!-- Modal de visualização da prescrição com os campos e valores -->
+<p-dialog header="Receita Simples" [(visible)]="viewPrescription" [modal]="true" showEffect="fade" [style]="{width: '30vw'}" [breakpoints]="{'960px': '75vw'}" [closable]="false">
+  <div class="grid">
+    <div class="col col-12">
+      <b class="text-lg text-primary fonr-semibold">Paciente</b>
+      <div class="flex flex-column gap-0">
+        <div class="grid m-0 mt-2">
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Nome: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.nome }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Nome Social: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.nomeSocial }}</span></p>
+          </div>
+          <div class="col col-12 p-0">
+            <p class="m-0 text-gray-600">CPF: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.cpf }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Data de Nascimento: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.dataNascimento }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Sexo: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.sexo }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Telefone Celular: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.telefoneCelular }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Telefone Fixo: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.telefoneFixo }}</span></p>
+          </div>
+          <div class="col col-12 p-0">
+            <p class="m-0 text-gray-600">E-mail: <span class="text-gray-700 font-bold">{{ prescriptionToView.paciente?.email }}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col col-12">
+      <b class="text-lg text-primary fonr-semibold">Medicamentos</b>
+      <div class="flex flex-column gap-0">
+        <div *ngFor="let medicamento of prescriptionToView.medicamentos; index as i" class="grid m-0 py-2 border-bottom-1 border-gray-200">
+          <div class="col col-fixed flex align-items-center">
+            <div class="w-2rem h-2rem flex justify-content-center align-items-center border-1 border-gray-300 border-circle">
+              <b class="text-primary text-base font-bold">{{ i + 1 }}</b>
+            </div>
+          </div>
+          <div class="col p-0">
+            <div class="grid m-0">
+              <div class="col col-12 p-0">
+                <p class="m-0 text-gray-600">Nome: <span class="text-gray-700 font-bold">{{ medicamento?.nome }}</span></p>
+              </div>
+              <div class="col col-8 p-0">
+                <p class="m-0 text-gray-600">Dosagem/Concentração: <span class="text-gray-700 font-bold">{{ medicamento?.concentracao }}</span></p>
+              </div>
+              <div class="col col-4 p-0">
+                <p class="m-0 text-gray-600">Quantidade: <span class="text-gray-700 font-bold">{{ medicamento?.quantidade }}</span></p>
+              </div>
+              <div class="col col-12 p-0">
+                <p class="m-0 text-gray-600">Informações: <span class="text-gray-700 font-bold">{{ medicamento?.informacoes }}</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col col-12">
+      <b class="text-lg text-primary fonr-semibold">Local de Atendimento</b>
+      <div class="flex flex-column gap-0">
+        <div class="grid m-0 mt-2">
+          <div class="col col-12 p-0">
+            <p class="m-0 text-gray-600">Nome: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.nome }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">CEP: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.cep }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">UF: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.uf }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Endereço: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.cidade }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Bairro: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.bairro }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Logradouro: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.logradouro }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Número: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.numero }}</span></p>
+          </div>
+          <div class="col col-12 p-0">
+            <p class="m-0 text-gray-600">Complemento: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.endereco?.complemento }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Telefone Celular: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.telefoneCelular }}</span></p>
+          </div>
+          <div class="col col-6 p-0">
+            <p class="m-0 text-gray-600">Telefone Fixo: <span class="text-gray-700 font-bold">{{ prescriptionToView.localAtendimento?.telefoneFixo }}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton icon="pi pi-check" (click)="viewPrescription=false" label="Fechar" class="p-button-outlined"></button>
+  </ng-template>
+</p-dialog>
+
+<p-toast key="tst"></p-toast>

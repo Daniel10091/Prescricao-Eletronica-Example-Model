@@ -36,3 +36,15 @@ html, body {
 *:active, *:focus {
   outline: none;
 }
+
+.p-dropdown {
+  border-radius: 1.5rem;
+  padding-inline: 1rem 0.5rem;
+  .p-dropdown-label.p-placeholder, .p-inputtext {
+    font-size: 1.125rem;
+  }
+}
+
+.p-button {
+  border-radius: 1.5rem;
+}

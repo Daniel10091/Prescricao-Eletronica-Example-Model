@@ -1,0 +1,34 @@
+.container {
+  width: 100vw;
+  min-height: 100vh;
+}
+
+.form {
+  width: 60%;
+}
+
+.addPacienteSelection.warning-alert, .addLocalAtendimentoSelection.warning-alert {
+  animation: pacienteLocalAtendimentoButtomAlert ease 1s infinite;
+}
+
+.addMedicamentoButtom.warning-alert {
+  animation: medicamentoButtomAlert ease 1s infinite;
+}
+
+@keyframes pacienteLocalAtendimentoSelectionAlert {
+  0% {
+    border-color: #ced4da;
+  } 50% {
+    border-color: #F59E0B;
+  }
+}
+
+@keyframes medicamentoButtomAlert {
+  0% {
+    background-color: transparent;
+    border-color: transparent;
+  } 50% {
+    background: rgba(245, 158, 11, 0.04);
+    border-color: #F59E0B;
+  }
+}

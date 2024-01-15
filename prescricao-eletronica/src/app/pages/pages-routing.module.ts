@@ -12,8 +12,8 @@ const routes: Routes = [
     loadChildren: () => import('./inicio/inicio.module').then(m => m.InicioModule),
   },
   {
-    path: 'consulta-documento',
-    loadChildren: () => import('./consulta-documento/consulta-documento.module').then(m => m.ConsultaDocumentoModule),
+    path: 'prescricao-integracao',
+    loadChildren: () => import('./prescricao-integracao/prescricao-integracao.module').then(m => m.PrescricaoIntegracaoModule),
   }
 ];
 
