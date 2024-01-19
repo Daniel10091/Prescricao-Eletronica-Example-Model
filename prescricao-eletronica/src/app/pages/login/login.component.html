@@ -22,17 +22,17 @@
       <h2 class="font-bold text-primary">AUTENTICAÇÃO</h2>
       <span class="text-lg font-medium text-gray-700">Bem-vindos ao sistema Prescrição Eletrônica.</span>
       <span class="mt-1 text-lg font-medium text-gray-700">Utilize as caixas abaixo para acessar o sistema.</span>
-      <h4 *ngIf="isDoctor" class="mt-3 mb-0 text-primary">Você pode utilizar os mesmos dados de acesso do CRM Virtual.</h4>
+      <h5 *ngIf="isDoctor" class="mt-3 mb-0 text-primary">Você pode utilizar os mesmos dados de acesso do CRM Virtual.</h5>
       <div *ngIf="!systemIntegration" class="grid w-full mt-2">
         <div class="col flex justify-content-end">
           <div class="field-radiobutton">
-            <p-radioButton name="loginModel" value="Doctor" [(ngModel)]="loginModel" id="doctor" (ngModelChange)="selectDoctor()" [ariaChecked]="isDoctor"></p-radioButton>
+            <p-radioButton name="loginModel" value="Doctor" [(ngModel)]="loginModel" id="doctor" (ngModelChange)="onSelectLoginMode(false)" [ariaChecked]="isDoctor"></p-radioButton>
             <label for="doctor" class="text-lg font-medium">Sou Médico</label>
           </div>
         </div>
         <div class="col flex justify-content-start">
           <div class="field-radiobutton">
-            <p-radioButton name="loginModel" value="Pharmaceutical" [(ngModel)]="loginModel" id="pharmaceutical" (ngModelChange)="selectPharmaceutical()" [ariaChecked]="isPharmaceutical"></p-radioButton>
+            <p-radioButton name="loginModel" value="Pharmaceutical" [(ngModel)]="loginModel" id="pharmaceutical" (ngModelChange)="onSelectLoginMode(true)" [ariaChecked]="isPharmaceutical"></p-radioButton>
             <label for="pharmaceutical" class="text-lg font-medium">Sou Farmacêutico</label>
           </div>
         </div>

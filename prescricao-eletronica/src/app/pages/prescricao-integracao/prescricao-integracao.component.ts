@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Message, MessageService, SelectItem } from 'primeng/api';
 
@@ -9,6 +10,7 @@ import { Paciente } from 'src/app/models/paciente';
 import { Prescricao } from 'src/app/models/prescricao';
 import { RequestMessage } from 'src/app/models/requestMessage';
 import { ResponsavelLegal } from 'src/app/models/responsavelLegal';
+import { CookieService } from 'src/app/services/cookie.service';
 
 import { IntegrationMessagesService } from 'src/app/services/integration-messages.service';
 
@@ -65,10 +67,27 @@ export class PrescricaoIntegracaoComponent implements OnInit {
   
   constructor(
     private service: MessageService,
-    private integrationMessagesService: IntegrationMessagesService
+    private integrationMessagesService: IntegrationMessagesService,
+    private router: Router,
+    private cookieService: CookieService
   ) { }
 
   ngOnInit(): void {
+    if (!this.userIsAuthenticated()) {
+      this.router.navigate(['/login']);
+    } else {
+      this.init();
+    }
+
+    if (window.localStorage.getItem('refresh') == 'true') {
+      window.localStorage.setItem('refresh', 'false');
+      window.location.reload();
+    }
+
+    if (window.opener) {
+      this.integrationMessagesService.parentWindow = window.opener;
+    }
+    
     let endereco = new Endereco(
       '1',
       '74000000',
@@ -87,8 +106,8 @@ export class PrescricaoIntegracaoComponent implements OnInit {
         new LocalAtendimento('1', 'logo', 'Clínica Aparência', endereco, 'email@gmail.com', '62999999999', '6233333333'),
         new Paciente('1', 'Daniel', 'Natália', '02320121056', '2001-05-04', 'M', 'daniel@gmail.com', '62999999999', '6233333333', new Endereco(), new ResponsavelLegal()),
         [
-          new Medicamento('662', false, 'amoxilina', '2mg', 2, 'Tomar diariamente.'),
-          new Medicamento('590', false, 'DIPIRONA SODICA', '3mg', 3, 'Tomar diariamente.'),
+          // new Medicamento('662', false, 'amoxilina', '2mg', 2, 'Tomar diariamente.'),
+          // new Medicamento('590', false, 'DIPIRONA SODICA', '3mg', 3, 'Tomar diariamente.'),
           // new Medicamento('461', false, 'DIPRIVAN', '3mg', 3, 'Tomar diariamente.'),
           // new Medicamento('587', false, 'rivotril', '4mg', 4, 'Tomar diariamente.')
         ]
@@ -109,22 +128,22 @@ export class PrescricaoIntegracaoComponent implements OnInit {
 
     [
       {
-        "id": 662,
+        "idMedicamento": 662,
         "nome": "amoxilina",
         "medicoId": 129
       },
       {
-        "id": 590,
+        "idMedicamento": 590,
         "nome": "DIPIRONA SODICA",
         "medicoId": 129
       },
       {
-        "id": 461,
+        "idMedicamento": 461,
         "nome": "DIPRIVAN",
         "medicoId": 129
       },
       {
-        "id": 587,
+        "idMedicamento": 587,
         "nome": "rivotril",
         "medicoId": 129
       },
@@ -212,11 +231,11 @@ export class PrescricaoIntegracaoComponent implements OnInit {
         return medicamentoSelecionado.idMedicamento == medicamento.idMedicamento;
       }).length == 0) {
         this.setMedicamentos(medicamento);
-        this.toggleAddMedicamentoBox(false);
       } else {
         this.setUpdatedMedicamento(medicamento);
-        this.toggleAddMedicamentoBox(false);
       }
+
+      this.toggleAddMedicamentoBox(false);
     
       this.medicamento = new Medicamento();
       this.medicamentoSelecionado = new Medicamento();
@@ -391,6 +410,60 @@ export class PrescricaoIntegracaoComponent implements OnInit {
    */
   private showErrorViaToast(summary: string, datail: string) {
     this.service.add({ key: 'tst', severity: 'error', summary: summary, detail: datail });
+  }
+
+  // ========== [ Login ] ==========
+
+  /**
+   * Verifica se o usuário está autenticado.
+   * 
+   * @returns boolean 
+   */
+  private userIsAuthenticated(): boolean {
+    return this.cookieService.checkCookie('forDoctor');
+  }
+  
+  /**
+   * Faz logout.
+   * 
+   * @returns void 
+   */
+  public logoutClick(): void {
+    this.cookieService.deleteCookie('forDoctor');
+    this.router.navigate(['login']);
+  }
+
+  // ========== [ Integration ] ==========
+
+  /**
+   * Inicializa o serviço de integração.
+   * 
+   * @returns void 
+   */
+  private init(): void {
+    this.integrationMessagesService.message$.subscribe((message: any) => {
+      console.log(message);
+    });
+  }
+
+  /**
+   * Codifica a mensagem de requisição.
+   * 
+   * @param requestMessage 
+   * @returns string 
+   */
+  private encodeRequestMessage(requestMessage: RequestMessage): string {
+    return btoa(JSON.stringify(requestMessage));
+  }
+
+  /**
+   * Decodifica a mensagem de resposta.
+   * 
+   * @param responseMessage 
+   * @returns string 
+   */
+  private decodeResponseMessage(responseMessage: string): string {
+    return atob(responseMessage);
   }
 
 }

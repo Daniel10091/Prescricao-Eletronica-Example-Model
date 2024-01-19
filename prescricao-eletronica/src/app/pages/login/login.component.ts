@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SelectItem } from 'primeng/api';
+import { MessageService, SelectItem } from 'primeng/api';
+import { CookieService } from 'src/app/services/cookie.service';
 
 class Login {
   login!: string;
@@ -12,7 +13,8 @@ class Login {
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  providers: [ MessageService ]
 })
 export class LoginComponent implements OnInit {
   
@@ -45,11 +47,17 @@ export class LoginComponent implements OnInit {
   protected siteKey: string = '6LepbP0UAAAAAJ4txXicgIKYE_GRgP6djVysEAi3';
 
   constructor(
+    private service: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private cookieService: CookieService
   ) { }
 
   ngOnInit(): void {
+    if (this.userIsAuthenticated()) {
+      this.router.navigate(['prescricao-integracao']);
+    }
+
     this.loginModel = 'Doctor';
     
     this.createForm(new Login());
@@ -111,18 +119,18 @@ export class LoginComponent implements OnInit {
     console.log('reCaptcha verified');
   }
 
-  public selectDoctor() {
-    this.isDoctor = true;
-    this.isPharmaceutical = false;
-  }
+  // public selectDoctor() {
+  //   this.isDoctor = true;
+  //   this.isPharmaceutical = false;
+  // }
 
-  public selectPharmaceutical() {
-    this.isDoctor = false;
-    this.isPharmaceutical = true;
-  }
+  // public selectPharmaceutical() {
+  //   this.isDoctor = false;
+  //   this.isPharmaceutical = true;
+  // }
 
-  public onSelectLoginMode(): void {
-    
+  public onSelectLoginMode(value: boolean): void {
+    this.isPharmaceutical = value;
   }
 
   /**
@@ -135,7 +143,7 @@ export class LoginComponent implements OnInit {
     this.uf = event.value;
   }
   
-  public loginClick() {
+  public loginClick(): void {
     // this.valueIsNotNull(this.formCliente.value.login, this.invalidLogin);
     // this.valueIsNotNull(this.formCliente.value.uf, this.invalidUF);
     // this.valueIsNotNull(this.formCliente.value.password, this.invalidPassword);
@@ -150,12 +158,15 @@ export class LoginComponent implements OnInit {
         this.valueIsNotNull(this.formCliente.value.recaptcha) ? this.invalidRecaptcha = true : this.invalidRecaptcha = false;
 
     if (this.formCliente.valid) {
-      if (this.isDoctor) {
+      if (!this.isPharmaceutical) {
+        // set cookie forDoctor
+        this.cookieService.setCookie('forDoctor', 'true', 1);
         this.router.navigate(['prescricao-integracao']);
+        window.localStorage.setItem('refresh', 'true');
       } else if (this.isPharmaceutical) {
-        console.log('Pharmaceutical');
+        
       } else {
-        console.log('No selecciono nada');
+        this.showErrorViaToast('Erro', 'Ocorreu um erro ao realizar o login.');
       }
     }
   }
@@ -164,7 +175,62 @@ export class LoginComponent implements OnInit {
     return value == null || value === undefined || value === '';
   }
 
+  /**
+   * Verifica se o usuário está autenticado.
+   * 
+   * @returns boolean 
+   */
+  private userIsAuthenticated(): boolean {
+    return this.cookieService.checkCookie('forDoctor');
+  }
+
   // Recaptcha
   // »»» https://www.npmjs.com/package/ngx-captcha «««
+
+  // ========== [ Toast ] ==========
+
+  /**
+   * Exibe uma mensagem de sucesso.
+   * 
+   * @param summary 
+   * @param datail 
+   * @returns void 
+   */
+  private showSuccessViaToast(summary: string, datail: string) {
+    this.service.add({ key: 'tst', severity: 'success', summary: summary, detail: datail });
+  }
+
+  /**
+   * Exibe uma mensagem de informação.
+   * 
+   * @param summary 
+   * @param datail 
+   * @returns void 
+   */
+  private showInfoViaToast(summary: string, datail: string) {
+    this.service.add({ key: 'tst', severity: 'info', summary: summary, detail: datail });
+  }
+
+  /**
+   * Exibe uma mensagem de aviso.
+   * 
+   * @param summary 
+   * @param datail 
+   * @returns void 
+   */
+  private showWarnViaToast(summary: string, datail: string) {
+    this.service.add({ key: 'tst', severity: 'warn', summary: summary, detail: datail });
+  }
+
+  /**
+   * Exibe uma mensagem de erro.
+   * 
+   * @param summary 
+   * @param datail 
+   * @returns void 
+   */
+  private showErrorViaToast(summary: string, datail: string) {
+    this.service.add({ key: 'tst', severity: 'error', summary: summary, detail: datail });
+  }
 
 }

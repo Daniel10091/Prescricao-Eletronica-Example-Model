@@ -14,8 +14,14 @@
               <p-dropdown [options]="pacientes" [(ngModel)]="paciente" placeholder="Selecione um paciente" [disabled]="true" [ngModelOptions]="{standalone: false}"></p-dropdown>
             </div>
           </div>
-          <div class="col col-fixed flex align-items-end">
+          <!-- <div class="col col-fixed flex align-items-end">
             <button #addPacienteSelection pButton pRipple type="button" class="addPacienteSelection p-button-rounded" label="Cadastrar novo paciente"></button>
+          </div> -->
+          <div class="col">
+            <div class="form-group flex flex-column p-fluid gap-2">
+              <label for="localAtendimento" class="text-lg font-bold">Local de Atendimento</label>
+              <p-dropdown [options]="locaisAtendimento" [(ngModel)]="selectedLocalAtendimentoDrop" placeholder="Selecione um local de atendimento" [disabled]="true" [ngModelOptions]="{standalone: false}"></p-dropdown>
+            </div>
           </div>
         </div>
       </section>
@@ -96,15 +102,15 @@
   
       <section class="section">
         <div class="row grid formgrid p-3">
-          <div class="col">
+          <!-- <div class="col">
             <div class="form-group flex flex-column p-fluid gap-2">
               <label for="localAtendimento" class="text-lg font-bold">Local de Atendimento</label>
               <p-dropdown [options]="locaisAtendimento" [(ngModel)]="selectedLocalAtendimentoDrop" placeholder="Selecione um local de atendimento" [disabled]="true" [ngModelOptions]="{standalone: false}"></p-dropdown>
             </div>
-          </div>
-          <div class="col col-fixed flex align-items-end">
+          </div> -->
+          <!-- <div class="col col-fixed flex align-items-end">
             <button #addLocalAtendimentoSelection pButton pRipple type="button" class="addLocalAtendimentoSelection p-button-rounded" label="Cadastrar novo local de atendimento"></button>
-          </div>
+          </div> -->
         </div>
       </section>
     </div>
