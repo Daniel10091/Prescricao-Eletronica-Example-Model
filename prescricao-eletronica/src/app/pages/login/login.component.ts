@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.userIsAuthenticated()) {
-      this.router.navigate(['prescricao-integracao']);
+      this.router.navigate(['app/inicio']);
     }
 
     this.loginModel = 'Doctor';

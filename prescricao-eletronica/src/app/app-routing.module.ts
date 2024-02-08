@@ -12,8 +12,8 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule),
   },
   {
-    path: 'inicio',
-    loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),
+    path: 'app',
+    loadChildren: () => import('./system/system.module').then(m => m.SystemModule),
   },
   {
     path: 'prescricao-integracao',
